@@ -167,7 +167,7 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             ticker.toUpperCase(),
             companyName,
             1,
-            "Team Member",
+            submitterName,
             confidenceLevel,
             reasoning,
             priceTarget || null,
@@ -349,16 +349,12 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
 
 app.get('/api/pending-reviews', (req, res) => {
     try {
-        // Get submissions that need review from current user
+        // Get all submissions (no auth filtering - Option A approach)
         const pending = db.query(`
             SELECT s.*
             FROM submissions s
-            WHERE s.submitter_id != ?
-            AND s.id NOT IN (
-                SELECT submission_id FROM reviews WHERE reviewer_id = ?
-            )
             ORDER BY s.created_at DESC
-        `, [1, 1]);
+        `);
 
         res.json(pending);
     } catch (error) {
