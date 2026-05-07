@@ -12,6 +12,15 @@ const discord = require('./discord');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Use persistent disk path on Render, local path otherwise
+const dataDir = process.env.RENDER ? '/opt/render/project/src/data' : __dirname;
+const uploadsDir = path.join(dataDir, 'uploads');
+
+// Ensure uploads directory exists
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:8081',
@@ -33,7 +42,7 @@ app.use(session({
 // File upload configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, 'uploads'));
+        cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
         const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
@@ -389,7 +398,7 @@ app.get('/api/watchlist', requireAuth, (req, res) => {
 
 app.get('/api/files/:filename', requireAuth, (req, res) => {
     const filename = req.params.filename;
-    const filepath = path.join(__dirname, 'uploads', filename);
+    const filepath = path.join(uploadsDir, filename);
 
     if (fs.existsSync(filepath)) {
         res.download(filepath);
