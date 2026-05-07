@@ -449,7 +449,6 @@ async function startReview(submissionId) {
             }
         });
     } catch (error) {
-    formData.append('reviewerName', document.getElementById('reviewerName').value);
         console.error('Error starting review:', error);
         alert('Failed to load submission for review');
     }
@@ -466,6 +465,7 @@ async function submitReview(e, submissionId) {
     formData.append('timeHorizon', document.getElementById('reviewTimeHorizon').value);
     formData.append('sector', document.getElementById('reviewSector').value);
 
+    formData.append('reviewerName', document.getElementById('reviewerName').value);
     // Add files
     const files = document.getElementById('reviewAttachments').files;
     for (let i = 0; i < files.length; i++) {
