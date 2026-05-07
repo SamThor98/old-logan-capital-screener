@@ -153,7 +153,8 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             reasoning,
             priceTarget,
             timeHorizon,
-            sector
+            sector,
+            submitterName
         } = req.body;
 
         // Insert submission
@@ -184,6 +185,7 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
                     VALUES (?, ?, ?, ?, ?)
                 `, [
                     submissionId,
+            reviewerName,
                     file.originalname,
                     file.filename,
                     file.mimetype,
@@ -193,7 +195,7 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
         }
 
         // Send Discord notification
-        await discord.sendNewSubmissionNotification(ticker.toUpperCase(), "Team Member");
+        await discord.sendNewSubmissionNotification(ticker.toUpperCase(), submitterName);
 
         res.json({ success: true, submissionId });
     } catch (error) {
@@ -251,6 +253,7 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
     try {
         const {
             submissionId,
+            reviewerName,
             confidenceLevel,
             reasoning,
             priceTarget,
@@ -258,20 +261,26 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             sector
         } = req.body;
 
+        // Get submission to check reviewer constraints
+        const submission = db.query('SELECT * FROM submissions WHERE id = ?', [submissionId]);
+        
+        if (submission.length === 0) {
+            return res.status(404).json({ error: 'Submission not found' });
+        }
+
+        // Check if user is the submitter
+        if (submission[0].submitter_name === reviewerName) {
+            return res.status(400).json({ error: 'Cannot review your own submission' });
+        }
+
         // Check if user already reviewed this
         const existing = db.query(
-            'SELECT * FROM reviews WHERE submission_id = ? AND reviewer_id = ?',
-            [submissionId, 1]
+            'SELECT * FROM reviews WHERE submission_id = ? AND reviewer_name = ?',
+            [submissionId, reviewerName]
         );
 
         if (existing.length > 0) {
             return res.status(400).json({ error: 'You already reviewed this submission' });
-        }
-
-        // Check if user is the submitter
-        const submission = db.query('SELECT * FROM submissions WHERE id = ?', [submissionId]);
-        if (submission[0].submitter_id === 1) {
-            return res.status(400).json({ error: 'Cannot review your own submission' });
         }
 
         // Insert review
@@ -283,7 +292,7 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
         `, [
             submissionId,
             1,
-            "Team Member",
+            reviewerName,
             confidenceLevel,
             reasoning,
             priceTarget || null,
@@ -314,7 +323,7 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
         const reviewsNeeded = 3; // All 3 other team members
 
         // Send Discord notification
-        await discord.sendReviewCompleteNotification(submission[0].ticker, "Team Member",
+        await discord.sendReviewCompleteNotification(submission[0].ticker, reviewerName,
             reviews.length,
             reviewsNeeded
         );

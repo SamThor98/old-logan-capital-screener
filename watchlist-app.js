@@ -242,6 +242,7 @@ async function handleSubmit(e) {
 
     const formData = new FormData();
     formData.append('ticker', document.getElementById('ticker').value);
+    formData.append('submitterName', document.getElementById('submitterName').value);
     formData.append('companyName', document.getElementById('companyName').value);
     formData.append('confidenceLevel', document.getElementById('confidenceLevel').value);
     formData.append('reasoning', document.getElementById('reasoning').value);
@@ -370,6 +371,17 @@ async function startReview(submissionId) {
 
             <form id="reviewForm" onsubmit="submitReview(event, ${submissionId})">
                 <div class="form-group">
+                    <label for="reviewerName">Your Name *</label>
+                    <select id="reviewerName" required>
+                        <option value="">Select your name</option>
+                        <option value="Paxton">Paxton</option>
+                        <option value="Alex">Alex</option>
+                        <option value="Garret">Garret</option>
+                        <option value="Sam">Sam</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label for="reviewConfidence">Your Confidence Level (1-5) *</label>
                     <select id="reviewConfidence" required>
                         <option value="">Select confidence level</option>
@@ -437,6 +449,7 @@ async function startReview(submissionId) {
             }
         });
     } catch (error) {
+    formData.append('reviewerName', document.getElementById('reviewerName').value);
         console.error('Error starting review:', error);
         alert('Failed to load submission for review');
     }
