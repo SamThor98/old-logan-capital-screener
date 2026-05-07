@@ -77,7 +77,7 @@ function createTables() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (submission_id) REFERENCES submissions(id),
             FOREIGN KEY (reviewer_id) REFERENCES users(id),
-            UNIQUE(submission_id, reviewer_id)
+            UNIQUE(submission_id, reviewer_name)
         )
     `);
 
