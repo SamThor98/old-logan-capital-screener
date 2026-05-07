@@ -23,11 +23,6 @@ function setupEventListeners() {
 // ===== AUTHENTICATION =====
 
 async function checkAuth() {
-    // Skip authentication - just show the app directly
-    currentUser = { fullName: 'Guest User', username: 'guest' };
-    showApp();
-
-    /* Original auth code - commented out
     try {
         const response = await fetch(`${API_URL}/me`, {
             credentials: 'include'
@@ -44,7 +39,6 @@ async function checkAuth() {
         console.error('Auth check failed:', error);
         window.location.href = 'employee.html?redirect=watchlist';
     }
-    */
 }
 
 async function logout() {
