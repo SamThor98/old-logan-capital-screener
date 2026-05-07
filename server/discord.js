@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const WEBHOOK_URL = 'https://discordapp.com/api/webhooks/1500951215226355872/QYoU0Xk0f4CvDATn1SAYl2qxaZK7wVx39SaDTwOuFqgywcfj5cszM00FTO76pNuQcfxP';
+const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || 'https://discordapp.com/api/webhooks/1500951215226355872/QYoU0Xk0f4CvDATn1SAYl2qxaZK7wVx39SaDTwOuFqgywcfj5cszM00FTO76pNuQcfxP';
 
 async function sendNewSubmissionNotification(ticker, submitterName) {
     try {

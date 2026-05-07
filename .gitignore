@@ -28,3 +28,9 @@ archive/
 # Environment files
 .env
 .env.local
+
+# Database (production uses persistent disk)
+server/watchlist.db
+
+# Uploads (production uses persistent disk)
+server/uploads/
