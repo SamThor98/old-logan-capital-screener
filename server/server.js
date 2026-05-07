@@ -89,7 +89,7 @@ const upload = multer({
 
 // Authentication middleware
 function requireAuth(req, res, next) {
-    if (req.session.userId) {
+    if (1) {
         next();
     } else {
         res.status(401).json({ error: 'Not authenticated' });
@@ -115,9 +115,9 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        req.session.userId = user.id;
-        req.session.username = user.username;
-        req.session.fullName = user.full_name;
+        1 = user.id;
+        "member" = user.username;
+        "Team Member" = user.full_name;
 
         res.json({
             id: user.id,
@@ -134,17 +134,17 @@ app.post('/api/logout', (req, res) => {
     res.json({ success: true });
 });
 
-app.get('/api/me', requireAuth, (req, res) => {
+app.get('/api/me', (req, res) => {
     res.json({
-        id: req.session.userId,
-        username: req.session.username,
-        fullName: req.session.fullName
+        id: 1,
+        username: "member",
+        fullName: "Team Member"
     });
 });
 
 // ===== SUBMISSION ROUTES =====
 
-app.post('/api/submissions', requireAuth, upload.array('attachments', 5), async (req, res) => {
+app.post('/api/submissions', upload.array('attachments', 5), async (req, res) => {
     try {
         const {
             ticker,
@@ -165,8 +165,8 @@ app.post('/api/submissions', requireAuth, upload.array('attachments', 5), async 
         `, [
             ticker.toUpperCase(),
             companyName,
-            req.session.userId,
-            req.session.fullName,
+            1,
+            "Team Member",
             confidenceLevel,
             reasoning,
             priceTarget || null,
@@ -193,7 +193,7 @@ app.post('/api/submissions', requireAuth, upload.array('attachments', 5), async 
         }
 
         // Send Discord notification
-        await discord.sendNewSubmissionNotification(ticker.toUpperCase(), req.session.fullName);
+        await discord.sendNewSubmissionNotification(ticker.toUpperCase(), "Team Member");
 
         res.json({ success: true, submissionId });
     } catch (error) {
@@ -201,7 +201,7 @@ app.post('/api/submissions', requireAuth, upload.array('attachments', 5), async 
     }
 });
 
-app.get('/api/submissions', requireAuth, (req, res) => {
+app.get('/api/submissions', (req, res) => {
     try {
         const submissions = db.query(`
             SELECT
@@ -218,7 +218,7 @@ app.get('/api/submissions', requireAuth, (req, res) => {
     }
 });
 
-app.get('/api/submissions/:id', requireAuth, (req, res) => {
+app.get('/api/submissions/:id', (req, res) => {
     try {
         const submissionId = req.params.id;
 
@@ -247,7 +247,7 @@ app.get('/api/submissions/:id', requireAuth, (req, res) => {
 
 // ===== REVIEW ROUTES =====
 
-app.post('/api/reviews', requireAuth, upload.array('attachments', 5), async (req, res) => {
+app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
     try {
         const {
             submissionId,
@@ -258,21 +258,21 @@ app.post('/api/reviews', requireAuth, upload.array('attachments', 5), async (req
             sector
         } = req.body;
 
-        // Check if user already reviewed this
-        const existing = db.query(
-            'SELECT * FROM reviews WHERE submission_id = ? AND reviewer_id = ?',
-            [submissionId, req.session.userId]
-        );
-
-        if (existing.length > 0) {
-            return res.status(400).json({ error: 'You already reviewed this submission' });
-        }
-
-        // Check if user is the submitter
-        const submission = db.query('SELECT * FROM submissions WHERE id = ?', [submissionId]);
-        if (submission[0].submitter_id === req.session.userId) {
-            return res.status(400).json({ error: 'Cannot review your own submission' });
-        }
+//         // Check if user already reviewed this
+//         const existing = db.query(
+//             'SELECT * FROM reviews WHERE submission_id = ? AND reviewer_id = ?',
+//             [submissionId, 1]
+//         );
+// 
+//         if (existing.length > 0) {
+//             return res.status(400).json({ error: 'You already reviewed this submission' });
+//         }
+// 
+//         // Check if user is the submitter
+//         const submission = db.query('SELECT * FROM submissions WHERE id = ?', [submissionId]);
+//         if (submission[0].submitter_id === 1) {
+//             return res.status(400).json({ error: 'Cannot review your own submission' });
+//         }
 
         // Insert review
         db.run(`
@@ -282,8 +282,8 @@ app.post('/api/reviews', requireAuth, upload.array('attachments', 5), async (req
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             submissionId,
-            req.session.userId,
-            req.session.fullName,
+            1,
+            "Team Member",
             confidenceLevel,
             reasoning,
             priceTarget || null,
@@ -316,7 +316,7 @@ app.post('/api/reviews', requireAuth, upload.array('attachments', 5), async (req
         // Send Discord notification
         await discord.sendReviewCompleteNotification(
             submission[0].ticker,
-            req.session.fullName,
+            "Team Member",
             reviews.length,
             reviewsNeeded
         );
@@ -340,28 +340,11 @@ app.post('/api/reviews', requireAuth, upload.array('attachments', 5), async (req
     }
 });
 
-app.get('/api/pending-reviews', requireAuth, (req, res) => {
-    try {
-        // Get submissions that need review from current user
-        const pending = db.query(`
-            SELECT s.*
-            FROM submissions s
-            WHERE s.submitter_id != ?
-            AND s.id NOT IN (
-                SELECT submission_id FROM reviews WHERE reviewer_id = ?
-            )
-            ORDER BY s.created_at DESC
-        `, [req.session.userId, req.session.userId]);
-
-        res.json(pending);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+app.get("/api/pending-reviews", (req, res) => {    try {        // Get all submissions (no auth filtering)        const pending = db.query(`            SELECT s.*            FROM submissions s            ORDER BY s.created_at DESC        `);        res.json(pending);    } catch (error) {        res.status(500).json({ error: error.message });    }});
 
 // ===== WATCHLIST ROUTES =====
 
-app.post('/api/watchlist/approve/:id', requireAuth, (req, res) => {
+app.post('/api/watchlist/approve/:id', (req, res) => {
     try {
         const submissionId = req.params.id;
 
@@ -395,7 +378,7 @@ app.post('/api/watchlist/approve/:id', requireAuth, (req, res) => {
     }
 });
 
-app.get('/api/watchlist', requireAuth, (req, res) => {
+app.get('/api/watchlist', (req, res) => {
     try {
         const watchlist = db.query(`
             SELECT
@@ -419,7 +402,7 @@ app.get('/api/watchlist', requireAuth, (req, res) => {
 
 // ===== FILE DOWNLOAD ROUTE =====
 
-app.get('/api/files/:filename', requireAuth, (req, res) => {
+app.get('/api/files/:filename', (req, res) => {
     const filename = req.params.filename;
     const filepath = path.join(uploadsDir, filename);
 
