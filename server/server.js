@@ -157,6 +157,10 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             submitterName
         } = req.body;
 
+        // Get submitter user ID from the database
+        const submitter = db.query('SELECT id FROM users WHERE full_name = ?', [submitterName]);
+        const submitterId = submitter.length > 0 ? submitter[0].id : 1;
+
         // Insert submission
         db.run(`
             INSERT INTO submissions (
@@ -166,7 +170,7 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
         `, [
             ticker.toUpperCase(),
             companyName,
-            1,
+            submitterId,
             submitterName,
             confidenceLevel,
             reasoning,
@@ -282,6 +286,10 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             return res.status(400).json({ error: 'You already reviewed this submission' });
         }
 
+        // Get reviewer user ID from the database
+        const reviewer = db.query('SELECT id FROM users WHERE full_name = ?', [reviewerName]);
+        const reviewerId = reviewer.length > 0 ? reviewer[0].id : 1;
+
         // Insert review
         db.run(`
             INSERT INTO reviews (
@@ -290,7 +298,7 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             submissionId,
-            1,
+            reviewerId,
             reviewerName,
             confidenceLevel,
             reasoning,

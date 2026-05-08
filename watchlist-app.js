@@ -374,10 +374,10 @@ async function startReview(submissionId) {
                     <label for="reviewerName">Your Name *</label>
                     <select id="reviewerName" required>
                         <option value="">Select your name</option>
-                        <option value="Paxton">Paxton</option>
-                        <option value="Alex">Alex</option>
-                        <option value="Garret">Garret</option>
-                        <option value="Sam">Sam</option>
+                        <option value="Paxton Thompson">Paxton</option>
+                        <option value="Alex Evenson">Alex</option>
+                        <option value="Garett Lake">Garret</option>
+                        <option value="Sam Thoresen">Sam</option>
                     </select>
                 </div>
 
