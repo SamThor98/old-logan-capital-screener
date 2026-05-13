@@ -128,12 +128,33 @@ function sortSubmissions(submissions, sortBy) {
 async function viewSubmission(id) {
     try {
         const response = await fetch(`${API_URL}/submissions/${id}`, {
-            
+
         });
 
         if (!response.ok) throw new Error('Failed to load submission details');
 
         const submission = await response.json();
+
+        // DEBUG: Log what backend is returning
+        console.log('=== BACKEND RESPONSE DEBUG ===');
+        console.log('Full submission object:', submission);
+        console.log('Submission scores:', {
+            confidence: submission.confidence_level,
+            technical: submission.technical_score,
+            fundamentals: submission.fundamentals_score,
+            theme: submission.theme_score,
+            sector: submission.sector_score,
+            final: submission.final_score
+        });
+        if (submission.reviews && submission.reviews.length > 0) {
+            console.log('Review 0 scores:', {
+                confidence: submission.reviews[0].confidence_level,
+                technical: submission.reviews[0].technical_score,
+                final: submission.reviews[0].final_score
+            });
+        }
+        console.log('============================');
+
         currentSubmissionId = id;
 
         let html = `
@@ -191,56 +212,56 @@ async function viewSubmission(id) {
 
         // Show reviews if complete
         if (submission.reviewsComplete && submission.reviews.length > 0) {
-            // Calculate team averages for all scores
+            // Calculate team averages for all scores using safe getters
             const allScores = [
                 {
                     name: submission.submitter_name,
-                    confidence: submission.confidence_level,
-                    technical: submission.technical_score,
-                    fundamentals: submission.fundamentals_score,
-                    theme: submission.theme_score,
-                    sector: submission.sector_score,
-                    canslim_c: submission.canslim_c,
-                    canslim_a: submission.canslim_a,
-                    canslim_n: submission.canslim_n,
-                    canslim_s: submission.canslim_s,
-                    canslim_l: submission.canslim_l,
-                    canslim_i: submission.canslim_i,
-                    canslim_m: submission.canslim_m,
-                    final_score: submission.final_score
+                    confidence: getSafeScore(submission.confidence_level),
+                    technical: getSafeScore(submission.technical_score),
+                    fundamentals: getSafeScore(submission.fundamentals_score),
+                    theme: getSafeScore(submission.theme_score),
+                    sector: getSafeScore(submission.sector_score),
+                    canslim_c: getSafeScore(submission.canslim_c),
+                    canslim_a: getSafeScore(submission.canslim_a),
+                    canslim_n: getSafeScore(submission.canslim_n),
+                    canslim_s: getSafeScore(submission.canslim_s),
+                    canslim_l: getSafeScore(submission.canslim_l),
+                    canslim_i: getSafeScore(submission.canslim_i),
+                    canslim_m: getSafeScore(submission.canslim_m),
+                    final_score: getSafeScore(submission.final_score)
                 },
                 ...submission.reviews.map(r => ({
                     name: r.reviewer_name,
-                    confidence: r.confidence_level,
-                    technical: r.technical_score,
-                    fundamentals: r.fundamentals_score,
-                    theme: r.theme_score,
-                    sector: r.sector_score,
-                    canslim_c: r.canslim_c,
-                    canslim_a: r.canslim_a,
-                    canslim_n: r.canslim_n,
-                    canslim_s: r.canslim_s,
-                    canslim_l: r.canslim_l,
-                    canslim_i: r.canslim_i,
-                    canslim_m: r.canslim_m,
-                    final_score: r.final_score
+                    confidence: getSafeScore(r.confidence_level),
+                    technical: getSafeScore(r.technical_score),
+                    fundamentals: getSafeScore(r.fundamentals_score),
+                    theme: getSafeScore(r.theme_score),
+                    sector: getSafeScore(r.sector_score),
+                    canslim_c: getSafeScore(r.canslim_c),
+                    canslim_a: getSafeScore(r.canslim_a),
+                    canslim_n: getSafeScore(r.canslim_n),
+                    canslim_s: getSafeScore(r.canslim_s),
+                    canslim_l: getSafeScore(r.canslim_l),
+                    canslim_i: getSafeScore(r.canslim_i),
+                    canslim_m: getSafeScore(r.canslim_m),
+                    final_score: getSafeScore(r.final_score)
                 }))
             ];
 
             const avgScores = {
-                confidence: (allScores.reduce((sum, s) => sum + parseFloat(s.confidence || 0), 0) / allScores.length).toFixed(2),
-                technical: (allScores.reduce((sum, s) => sum + parseFloat(s.technical || 0), 0) / allScores.length).toFixed(2),
-                fundamentals: (allScores.reduce((sum, s) => sum + parseFloat(s.fundamentals || 0), 0) / allScores.length).toFixed(2),
-                theme: (allScores.reduce((sum, s) => sum + parseFloat(s.theme || 0), 0) / allScores.length).toFixed(2),
-                sector: (allScores.reduce((sum, s) => sum + parseFloat(s.sector || 0), 0) / allScores.length).toFixed(2),
-                canslim_c: (allScores.reduce((sum, s) => sum + parseFloat(s.canslim_c || 0), 0) / allScores.length).toFixed(2),
-                canslim_a: (allScores.reduce((sum, s) => sum + parseFloat(s.canslim_a || 0), 0) / allScores.length).toFixed(2),
-                canslim_n: (allScores.reduce((sum, s) => sum + parseFloat(s.canslim_n || 0), 0) / allScores.length).toFixed(2),
-                canslim_s: (allScores.reduce((sum, s) => sum + parseFloat(s.canslim_s || 0), 0) / allScores.length).toFixed(2),
-                canslim_l: (allScores.reduce((sum, s) => sum + parseFloat(s.canslim_l || 0), 0) / allScores.length).toFixed(2),
-                canslim_i: (allScores.reduce((sum, s) => sum + parseFloat(s.canslim_i || 0), 0) / allScores.length).toFixed(2),
-                canslim_m: (allScores.reduce((sum, s) => sum + parseFloat(s.canslim_m || 0), 0) / allScores.length).toFixed(2),
-                final: (allScores.reduce((sum, s) => sum + parseFloat(s.final_score || 0), 0) / allScores.length).toFixed(2)
+                confidence: (allScores.reduce((sum, s) => sum + s.confidence, 0) / allScores.length).toFixed(2),
+                technical: (allScores.reduce((sum, s) => sum + s.technical, 0) / allScores.length).toFixed(2),
+                fundamentals: (allScores.reduce((sum, s) => sum + s.fundamentals, 0) / allScores.length).toFixed(2),
+                theme: (allScores.reduce((sum, s) => sum + s.theme, 0) / allScores.length).toFixed(2),
+                sector: (allScores.reduce((sum, s) => sum + s.sector, 0) / allScores.length).toFixed(2),
+                canslim_c: (allScores.reduce((sum, s) => sum + s.canslim_c, 0) / allScores.length).toFixed(2),
+                canslim_a: (allScores.reduce((sum, s) => sum + s.canslim_a, 0) / allScores.length).toFixed(2),
+                canslim_n: (allScores.reduce((sum, s) => sum + s.canslim_n, 0) / allScores.length).toFixed(2),
+                canslim_s: (allScores.reduce((sum, s) => sum + s.canslim_s, 0) / allScores.length).toFixed(2),
+                canslim_l: (allScores.reduce((sum, s) => sum + s.canslim_l, 0) / allScores.length).toFixed(2),
+                canslim_i: (allScores.reduce((sum, s) => sum + s.canslim_i, 0) / allScores.length).toFixed(2),
+                canslim_m: (allScores.reduce((sum, s) => sum + s.canslim_m, 0) / allScores.length).toFixed(2),
+                final: (allScores.reduce((sum, s) => sum + s.final_score, 0) / allScores.length).toFixed(2)
             };
 
             html += `
@@ -275,35 +296,36 @@ async function viewSubmission(id) {
             `;
 
             // Show submitter's scores first
+            const subScores = allScores[0]; // Already using safe getters
             html += `
                 <div class="review-card">
                     <h4>${submission.submitter_name} <span style="color: var(--gold); font-size: 0.8rem;">(Submitter)</span></h4>
                     <div class="detail-row">
                         <span class="detail-label">Final Score:</span>
-                        <span><strong>${submission.final_score ? parseFloat(submission.final_score).toFixed(2) : 'N/A'}/10</strong></span>
+                        <span><strong>${subScores.final_score.toFixed(2)}/10</strong></span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Confidence:</span>
-                        <span>${submission.confidence_level}/10</span>
+                        <span>${subScores.confidence}/10</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Technical:</span>
-                        <span>${submission.technical_score}/10</span>
+                        <span>${subScores.technical}/10</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Fundamentals:</span>
-                        <span>${submission.fundamentals_score}/10</span>
+                        <span>${subScores.fundamentals}/10</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Theme:</span>
-                        <span>${submission.theme_score}/5 (×2)</span>
+                        <span>${subScores.theme}/5 (×2)</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Sector:</span>
-                        <span>${submission.sector_score}/5 (×2)</span>
+                        <span>${subScores.sector}/5 (×2)</span>
                     </div>
                     <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem;">
-                        <strong>CANSLIM:</strong> C:${submission.canslim_c} A:${submission.canslim_a} N:${submission.canslim_n} S:${submission.canslim_s} L:${submission.canslim_l} I:${submission.canslim_i} M:${submission.canslim_m}
+                        <strong>CANSLIM:</strong> C:${subScores.canslim_c} A:${subScores.canslim_a} N:${subScores.canslim_n} S:${subScores.canslim_s} L:${subScores.canslim_l} I:${subScores.canslim_i} M:${subScores.canslim_m}
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Price Target:</span>
@@ -317,36 +339,37 @@ async function viewSubmission(id) {
             `;
 
             // Show reviewer scores
-            submission.reviews.forEach(review => {
+            submission.reviews.forEach((review, index) => {
+                const revScore = allScores[index + 1]; // +1 because allScores[0] is the submitter
                 html += `
                     <div class="review-card">
                         <h4>${review.reviewer_name}</h4>
                         <div class="detail-row">
                             <span class="detail-label">Final Score:</span>
-                            <span><strong>${review.final_score ? parseFloat(review.final_score).toFixed(2) : 'N/A'}/10</strong></span>
+                            <span><strong>${revScore.final_score.toFixed(2)}/10</strong></span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Confidence:</span>
-                            <span>${review.confidence_level}/10</span>
+                            <span>${revScore.confidence}/10</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Technical:</span>
-                            <span>${review.technical_score}/10</span>
+                            <span>${revScore.technical}/10</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Fundamentals:</span>
-                            <span>${review.fundamentals_score}/10</span>
+                            <span>${revScore.fundamentals}/10</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Theme:</span>
-                            <span>${review.theme_score}/5 (×2)</span>
+                            <span>${revScore.theme}/5 (×2)</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Sector:</span>
-                            <span>${review.sector_score}/5 (×2)</span>
+                            <span>${revScore.sector}/5 (×2)</span>
                         </div>
                         <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem;">
-                            <strong>CANSLIM:</strong> C:${review.canslim_c} A:${review.canslim_a} N:${review.canslim_n} S:${review.canslim_s} L:${review.canslim_l} I:${review.canslim_i} M:${review.canslim_m}
+                            <strong>CANSLIM:</strong> C:${revScore.canslim_c} A:${revScore.canslim_a} N:${revScore.canslim_n} S:${revScore.canslim_s} L:${revScore.canslim_l} I:${revScore.canslim_i} M:${revScore.canslim_m}
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Price Target:</span>
@@ -412,14 +435,41 @@ async function autoPopulateSector() {
 
     try {
         sectorInput.value = 'Loading...';
+        sectorInput.readOnly = true;
+
+        console.log(`Fetching sector for ticker: ${ticker} from ${API_URL}/ticker-info/${ticker}`);
+
         const response = await fetch(`${API_URL}/ticker-info/${ticker}`);
 
-        if (!response.ok) throw new Error('Ticker not found');
+        if (response.status === 404) {
+            // Endpoint doesn't exist or ticker not found
+            const errorText = await response.text();
+            console.error('Sector fetch 404:', errorText);
+
+            if (errorText.includes('Cannot GET') || errorText.includes('Not Found')) {
+                console.warn('⚠️ Backend endpoint /api/ticker-info/:ticker not implemented yet');
+                sectorInput.value = '';
+                sectorInput.placeholder = 'Backend endpoint not ready - enter manually';
+            } else {
+                sectorInput.value = '';
+                sectorInput.placeholder = 'Ticker not found - enter manually';
+            }
+            sectorInput.readOnly = false;
+            sectorInput.style.background = 'rgba(255, 255, 255, 0.8)';
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
 
         const data = await response.json();
+        console.log('Sector data received:', data);
+
         sectorInput.value = data.sector || 'N/A';
         sectorInput.readOnly = false;
         sectorInput.style.background = 'rgba(255, 255, 255, 0.8)';
+        console.log(`✓ Sector auto-populated: ${data.sector}`);
     } catch (error) {
         console.error('Error fetching sector:', error);
         sectorInput.value = '';
@@ -427,6 +477,15 @@ async function autoPopulateSector() {
         sectorInput.readOnly = false;
         sectorInput.style.background = 'rgba(255, 255, 255, 0.8)';
     }
+}
+
+// Helper function to safely get score value with fallback
+function getSafeScore(value, defaultValue = 0) {
+    if (value === null || value === undefined || value === '') {
+        return defaultValue;
+    }
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? defaultValue : parsed;
 }
 
 // Calculate final score from all scoring inputs
