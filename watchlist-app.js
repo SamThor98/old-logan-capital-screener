@@ -46,10 +46,23 @@ function debounce(func, wait) {
 
 // ===== TAB SWITCHING =====
 
-function switchTab(tabName) {
+function switchTab(tabName, event) {
     // Update tab buttons
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
+
+    // Only try to set active on event.target if event exists
+    if (event && event.target) {
+        event.target.classList.add('active');
+    } else {
+        // Find and activate the correct tab button by matching the onclick attribute
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            const onclickAttr = tab.getAttribute('onclick');
+            if (onclickAttr && onclickAttr.includes(`'${tabName}'`)) {
+                tab.classList.add('active');
+            }
+        });
+    }
 
     // Update tab content
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
