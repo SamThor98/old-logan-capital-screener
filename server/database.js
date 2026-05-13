@@ -20,6 +20,8 @@ async function initDatabase() {
     if (fs.existsSync(dbPath)) {
         const buffer = fs.readFileSync(dbPath);
         db = new SQL.Database(buffer);
+        // Run migration to add scoring columns if they don't exist
+        migrateAddScoringColumns();
     } else {
         db = new SQL.Database();
         createTables();
@@ -128,6 +130,86 @@ function seedUsers() {
             [user.username, user.full_name, user.password]
         );
     });
+}
+
+function migrateAddScoringColumns() {
+    console.log('\n=== Running Scoring Columns Migration ===');
+
+    // Check if columns already exist by trying to select them
+    try {
+        const test = query('SELECT technical_score FROM submissions LIMIT 1');
+        console.log('✓ Scoring columns already exist, skipping migration');
+        return;
+    } catch (error) {
+        // Columns don't exist, proceed with migration
+        console.log('Adding scoring columns to database...');
+    }
+
+    try {
+        // Add columns to submissions table
+        const submissionColumns = [
+            'technical_score INTEGER',
+            'fundamentals_score INTEGER',
+            'theme_score INTEGER',
+            'sector_score INTEGER',
+            'canslim_c INTEGER',
+            'canslim_a INTEGER',
+            'canslim_n INTEGER',
+            'canslim_s INTEGER',
+            'canslim_l INTEGER',
+            'canslim_i INTEGER',
+            'canslim_m INTEGER',
+            'final_score REAL'
+        ];
+
+        submissionColumns.forEach(column => {
+            const columnName = column.split(' ')[0];
+            try {
+                db.run(`ALTER TABLE submissions ADD COLUMN ${column}`);
+                console.log(`✓ Added ${columnName} to submissions`);
+            } catch (error) {
+                if (!error.message.includes('duplicate column')) {
+                    console.error(`✗ Error adding ${columnName}:`, error.message);
+                }
+            }
+        });
+
+        // Add columns to reviews table
+        const reviewColumns = [
+            'technical_score INTEGER',
+            'fundamentals_score INTEGER',
+            'theme_score INTEGER',
+            'sector_score INTEGER',
+            'canslim_c INTEGER',
+            'canslim_a INTEGER',
+            'canslim_n INTEGER',
+            'canslim_s INTEGER',
+            'canslim_l INTEGER',
+            'canslim_i INTEGER',
+            'canslim_m INTEGER',
+            'final_score REAL'
+        ];
+
+        reviewColumns.forEach(column => {
+            const columnName = column.split(' ')[0];
+            try {
+                db.run(`ALTER TABLE reviews ADD COLUMN ${column}`);
+                console.log(`✓ Added ${columnName} to reviews`);
+            } catch (error) {
+                if (!error.message.includes('duplicate column')) {
+                    console.error(`✗ Error adding ${columnName}:`, error.message);
+                }
+            }
+        });
+
+        // Save the updated database
+        saveDatabase();
+
+        console.log('✓ Migration complete - all scoring columns added\n');
+    } catch (error) {
+        console.error('✗ Migration failed:', error);
+        throw error;
+    }
 }
 
 function saveDatabase() {
