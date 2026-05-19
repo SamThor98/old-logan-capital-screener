@@ -534,6 +534,31 @@
                             <textarea id="reasoning" name="reasoning" required placeholder="Provide a 3-4 sentence analysis of why this ticker should be on the watchlist."></textarea>
                         </div>
 
+                        <div class="form-group">
+                            <label for="entryRange">Entry Range *</label>
+                            <input type="text" id="entryRange" name="entryRange" required placeholder="e.g., $45-50">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sellRange">Sell Range *</label>
+                            <input type="text" id="sellRange" name="sellRange" required placeholder="e.g., $75-85">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="timeHorizon">Time Horizon *</label>
+                            <select id="timeHorizon" name="timeHorizon" required>
+                                <option value="">Select time horizon</option>
+                                <option value="Short">Short Term (0-6 months)</option>
+                                <option value="Medium">Medium Term (6-12 months)</option>
+                                <option value="Long">Long Term (12+ months)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sector">Sector <small style="color: var(--text-muted);">(Auto-populated, can be edited)</small></label>
+                            <input type="text" id="sector" name="sector" placeholder="Auto-populating..." readonly style="background: rgba(201, 169, 98, 0.1);">
+                        </div>
+
                         <h3 style="margin: 2rem 0 1rem 0; font-family: 'Fraunces', serif; font-size: 1.4rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">Scoring (All scores required)</h3>
 
                         <!-- Core Scores -->
@@ -612,31 +637,6 @@
                                     <option value="5">5</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="entryRange">Entry Range *</label>
-                            <input type="text" id="entryRange" name="entryRange" required placeholder="e.g., $45-50">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="sellRange">Sell Range *</label>
-                            <input type="text" id="sellRange" name="sellRange" required placeholder="e.g., $75-85">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="timeHorizon">Time Horizon *</label>
-                            <select id="timeHorizon" name="timeHorizon" required>
-                                <option value="">Select time horizon</option>
-                                <option value="Short">Short Term (0-6 months)</option>
-                                <option value="Medium">Medium Term (6-12 months)</option>
-                                <option value="Long">Long Term (12+ months)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="sector">Sector <small style="color: var(--text-muted);">(Auto-populated, can be edited)</small></label>
-                            <input type="text" id="sector" name="sector" placeholder="Auto-populating..." readonly style="background: rgba(201, 169, 98, 0.1);">
                         </div>
 
                         <div class="form-group">
