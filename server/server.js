@@ -277,6 +277,61 @@ app.get('/api/submissions/:id', (req, res) => {
     }
 });
 
+app.delete('/api/submissions/:id', (req, res) => {
+    try {
+        const submissionId = req.params.id;
+
+        // Check if submission exists
+        const submission = db.query('SELECT * FROM submissions WHERE id = ?', [submissionId]);
+        if (submission.length === 0) {
+            return res.status(404).json({ error: 'Submission not found' });
+        }
+
+        // Get all attachments for this submission to delete files
+        const submissionAttachments = db.query('SELECT * FROM attachments WHERE submission_id = ?', [submissionId]);
+
+        // Get all reviews and their attachments
+        const reviews = db.query('SELECT id FROM reviews WHERE submission_id = ?', [submissionId]);
+        const reviewIds = reviews.map(r => r.id);
+
+        let reviewAttachments = [];
+        if (reviewIds.length > 0) {
+            const placeholders = reviewIds.map(() => '?').join(',');
+            reviewAttachments = db.query(`SELECT * FROM attachments WHERE review_id IN (${placeholders})`, reviewIds);
+        }
+
+        // Delete physical files
+        const allAttachments = [...submissionAttachments, ...reviewAttachments];
+        allAttachments.forEach(att => {
+            const filepath = path.join(uploadsDir, att.filepath);
+            if (fs.existsSync(filepath)) {
+                try {
+                    fs.unlinkSync(filepath);
+                } catch (err) {
+                    console.error(`Failed to delete file ${att.filepath}:`, err);
+                }
+            }
+        });
+
+        // Delete from database (in order due to foreign keys)
+        db.run('DELETE FROM attachments WHERE submission_id = ?', [submissionId]);
+
+        if (reviewIds.length > 0) {
+            const placeholders = reviewIds.map(() => '?').join(',');
+            db.run(`DELETE FROM attachments WHERE review_id IN (${placeholders})`, reviewIds);
+        }
+
+        db.run('DELETE FROM reviews WHERE submission_id = ?', [submissionId]);
+        db.run('DELETE FROM watchlist WHERE submission_id = ?', [submissionId]);
+        db.run('DELETE FROM submissions WHERE id = ?', [submissionId]);
+
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
+        console.error('Delete error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ===== REVIEW ROUTES =====
 
 app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
