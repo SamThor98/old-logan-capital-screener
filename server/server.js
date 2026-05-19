@@ -154,13 +154,6 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             fundamentalsScore,
             themeScore,
             sectorScore,
-            canslim_c,
-            canslim_a,
-            canslim_n,
-            canslim_s,
-            canslim_l,
-            canslim_i,
-            canslim_m,
             finalScore,
             reasoning,
             entryRange,
@@ -179,9 +172,8 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             INSERT INTO submissions (
                 ticker, company_name, submitter_id, submitter_name,
                 confidence_level, technical_score, fundamentals_score, theme_score, sector_score,
-                canslim_c, canslim_a, canslim_n, canslim_s, canslim_l, canslim_i, canslim_m,
                 final_score, reasoning, entry_range, sell_range, time_horizon, sector, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'submitted')
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'submitted')
         `, [
             ticker.toUpperCase(),
             companyName,
@@ -192,13 +184,6 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             fundamentalsScore,
             themeScore,
             sectorScore,
-            canslim_c,
-            canslim_a,
-            canslim_n,
-            canslim_s,
-            canslim_l,
-            canslim_i,
-            canslim_m,
             finalScore,
             reasoning,
             entryRange || null,
@@ -346,13 +331,6 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             fundamentalsScore,
             themeScore,
             sectorScore,
-            canslim_c,
-            canslim_a,
-            canslim_n,
-            canslim_s,
-            canslim_l,
-            canslim_i,
-            canslim_m,
             finalScore,
             reasoning,
             entryRange,
@@ -409,9 +387,8 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             INSERT INTO reviews (
                 submission_id, reviewer_id, reviewer_name,
                 confidence_level, technical_score, fundamentals_score, theme_score, sector_score,
-                canslim_c, canslim_a, canslim_n, canslim_s, canslim_l, canslim_i, canslim_m,
                 final_score, reasoning, entry_range, sell_range, time_horizon
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             submissionId,
             reviewerId,
@@ -421,13 +398,6 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             fundamentalsScore,
             themeScore,
             sectorScore,
-            canslim_c,
-            canslim_a,
-            canslim_n,
-            canslim_s,
-            canslim_l,
-            canslim_i,
-            canslim_m,
             finalScore,
             reasoning,
             entryRange || null,
