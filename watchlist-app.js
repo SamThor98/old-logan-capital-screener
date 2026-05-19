@@ -172,61 +172,66 @@ async function viewSubmission(id) {
         let html = `
             <h2>${submission.ticker} - ${submission.company_name}</h2>
 
-            ${submission.reviewsComplete ? `
-            <div class="detail-row">
-                <span class="detail-label">Submitted by:</span>
-                <span>${submission.submitter_name}</span>
-            </div>
-            ` : ''}
-
-            <div class="detail-row">
-                <span class="detail-label">Final Score:</span>
-                <span><strong>${submission.final_score ? parseFloat(submission.final_score).toFixed(2) : 'Pending'}/10</strong></span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Entry Range:</span>
-                <span>${submission.entry_range || 'N/A'}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Sell Range:</span>
-                <span>${submission.sell_range || 'N/A'}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Time Horizon:</span>
-                <span>${submission.time_horizon}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Sector:</span>
-                <span>${submission.sector || 'N/A'}</span>
-            </div>
-
             <div class="detail-row">
                 <span class="detail-label">Status:</span>
                 <span><span class="status-badge status-${submission.status}">${submission.status.replace('_', ' ')}</span></span>
             </div>
-
-            <div style="margin-top: 2rem;">
-                <h3 style="margin-bottom: 1rem;">Investment Thesis</h3>
-                <p style="line-height: 1.8; white-space: pre-wrap;">${submission.reasoning}</p>
-            </div>
         `;
 
-        // Show attachments if any
-        if (submission.attachments && submission.attachments.length > 0) {
+        // Only show details if status is NOT "submitted"
+        if (submission.status !== 'submitted') {
             html += `
+                ${submission.reviewsComplete ? `
+                <div class="detail-row">
+                    <span class="detail-label">Submitted by:</span>
+                    <span>${submission.submitter_name}</span>
+                </div>
+                ` : ''}
+
+                <div class="detail-row">
+                    <span class="detail-label">Final Score:</span>
+                    <span><strong>${submission.final_score ? parseFloat(submission.final_score).toFixed(2) : 'Pending'}/10</strong></span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Entry Range:</span>
+                    <span>${submission.entry_range || 'N/A'}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Sell Range:</span>
+                    <span>${submission.sell_range || 'N/A'}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Time Horizon:</span>
+                    <span>${submission.time_horizon}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Sector:</span>
+                    <span>${submission.sector || 'N/A'}</span>
+                </div>
+
                 <div style="margin-top: 2rem;">
-                    <h3 style="margin-bottom: 1rem;">Attachments</h3>
-                    <ul class="attachment-list">
-                        ${submission.attachments.map(att => `
-                            <li><a href="${API_URL}/files/${att.filepath}" target="_blank">📎 ${att.filename}</a></li>
-                        `).join('')}
-                    </ul>
+                    <h3 style="margin-bottom: 1rem;">Investment Thesis</h3>
+                    <p style="line-height: 1.8; white-space: pre-wrap;">${submission.reasoning}</p>
                 </div>
             `;
+
+            // Show attachments if any
+            if (submission.attachments && submission.attachments.length > 0) {
+                html += `
+                    <div style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Attachments</h3>
+                        <ul class="attachment-list">
+                            ${submission.attachments.map(att => `
+                                <li><a href="${API_URL}/files/${att.filepath}" target="_blank">📎 ${att.filename}</a></li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
         }
 
         // Add delete button
