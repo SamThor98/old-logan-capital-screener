@@ -184,8 +184,13 @@ async function viewSubmission(id) {
             </div>
 
             <div class="detail-row">
-                <span class="detail-label">Price Target:</span>
-                <span>${submission.price_target || 'N/A'}</span>
+                <span class="detail-label">Entry Range:</span>
+                <span>${submission.entry_range || 'N/A'}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Sell Range:</span>
+                <span>${submission.sell_range || 'N/A'}</span>
             </div>
 
             <div class="detail-row">
@@ -234,13 +239,6 @@ async function viewSubmission(id) {
                     fundamentals: getSafeScore(submission.fundamentals_score),
                     theme: getSafeScore(submission.theme_score),
                     sector: getSafeScore(submission.sector_score),
-                    canslim_c: getSafeScore(submission.canslim_c),
-                    canslim_a: getSafeScore(submission.canslim_a),
-                    canslim_n: getSafeScore(submission.canslim_n),
-                    canslim_s: getSafeScore(submission.canslim_s),
-                    canslim_l: getSafeScore(submission.canslim_l),
-                    canslim_i: getSafeScore(submission.canslim_i),
-                    canslim_m: getSafeScore(submission.canslim_m),
                     final_score: getSafeScore(submission.final_score)
                 },
                 ...submission.reviews.map(r => ({
@@ -250,13 +248,6 @@ async function viewSubmission(id) {
                     fundamentals: getSafeScore(r.fundamentals_score),
                     theme: getSafeScore(r.theme_score),
                     sector: getSafeScore(r.sector_score),
-                    canslim_c: getSafeScore(r.canslim_c),
-                    canslim_a: getSafeScore(r.canslim_a),
-                    canslim_n: getSafeScore(r.canslim_n),
-                    canslim_s: getSafeScore(r.canslim_s),
-                    canslim_l: getSafeScore(r.canslim_l),
-                    canslim_i: getSafeScore(r.canslim_i),
-                    canslim_m: getSafeScore(r.canslim_m),
                     final_score: getSafeScore(r.final_score)
                 }))
             ];
@@ -267,13 +258,6 @@ async function viewSubmission(id) {
                 fundamentals: (allScores.reduce((sum, s) => sum + s.fundamentals, 0) / allScores.length).toFixed(2),
                 theme: (allScores.reduce((sum, s) => sum + s.theme, 0) / allScores.length).toFixed(2),
                 sector: (allScores.reduce((sum, s) => sum + s.sector, 0) / allScores.length).toFixed(2),
-                canslim_c: (allScores.reduce((sum, s) => sum + s.canslim_c, 0) / allScores.length).toFixed(2),
-                canslim_a: (allScores.reduce((sum, s) => sum + s.canslim_a, 0) / allScores.length).toFixed(2),
-                canslim_n: (allScores.reduce((sum, s) => sum + s.canslim_n, 0) / allScores.length).toFixed(2),
-                canslim_s: (allScores.reduce((sum, s) => sum + s.canslim_s, 0) / allScores.length).toFixed(2),
-                canslim_l: (allScores.reduce((sum, s) => sum + s.canslim_l, 0) / allScores.length).toFixed(2),
-                canslim_i: (allScores.reduce((sum, s) => sum + s.canslim_i, 0) / allScores.length).toFixed(2),
-                canslim_m: (allScores.reduce((sum, s) => sum + s.canslim_m, 0) / allScores.length).toFixed(2),
                 final: (allScores.reduce((sum, s) => sum + s.final_score, 0) / allScores.length).toFixed(2)
             };
 
@@ -289,18 +273,8 @@ async function viewSubmission(id) {
                             <div><strong>Confidence:</strong> ${avgScores.confidence}/10</div>
                             <div><strong>Technical:</strong> ${avgScores.technical}/10</div>
                             <div><strong>Fundamentals:</strong> ${avgScores.fundamentals}/10</div>
-                            <div><strong>Theme:</strong> ${avgScores.theme}/5 (×2 = ${(avgScores.theme * 2).toFixed(2)})</div>
-                            <div><strong>Sector:</strong> ${avgScores.sector}/5 (×2 = ${(avgScores.sector * 2).toFixed(2)})</div>
-                        </div>
-                        <h5 style="margin: 1.5rem 0 0.5rem 0; font-size: 0.95rem;">CANSLIM Averages:</h5>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; font-size: 0.9rem;">
-                            <div>C: ${avgScores.canslim_c}/10</div>
-                            <div>A: ${avgScores.canslim_a}/10</div>
-                            <div>N: ${avgScores.canslim_n}/10</div>
-                            <div>S: ${avgScores.canslim_s}/10</div>
-                            <div>L: ${avgScores.canslim_l}/10</div>
-                            <div>I: ${avgScores.canslim_i}/10</div>
-                            <div>M: ${avgScores.canslim_m}/10</div>
+                            <div><strong>Theme:</strong> ${avgScores.theme}/5</div>
+                            <div><strong>Sector:</strong> ${avgScores.sector}/5</div>
                         </div>
                     </div>
 
@@ -331,18 +305,19 @@ async function viewSubmission(id) {
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Theme:</span>
-                        <span>${subScores.theme}/5 (×2)</span>
+                        <span>${subScores.theme}/5</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Sector:</span>
-                        <span>${subScores.sector}/5 (×2)</span>
-                    </div>
-                    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem;">
-                        <strong>CANSLIM:</strong> C:${subScores.canslim_c} A:${subScores.canslim_a} N:${subScores.canslim_n} S:${subScores.canslim_s} L:${subScores.canslim_l} I:${subScores.canslim_i} M:${subScores.canslim_m}
+                        <span>${subScores.sector}/5</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Price Target:</span>
-                        <span>${submission.price_target || 'N/A'}</span>
+                        <span class="detail-label">Entry Range:</span>
+                        <span>${submission.entry_range || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Sell Range:</span>
+                        <span>${submission.sell_range || 'N/A'}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Time Horizon:</span>
@@ -375,18 +350,19 @@ async function viewSubmission(id) {
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Theme:</span>
-                            <span>${revScore.theme}/5 (×2)</span>
+                            <span>${revScore.theme}/5</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Sector:</span>
-                            <span>${revScore.sector}/5 (×2)</span>
-                        </div>
-                        <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem;">
-                            <strong>CANSLIM:</strong> C:${revScore.canslim_c} A:${revScore.canslim_a} N:${revScore.canslim_n} S:${revScore.canslim_s} L:${revScore.canslim_l} I:${revScore.canslim_i} M:${revScore.canslim_m}
+                            <span>${revScore.sector}/5</span>
                         </div>
                         <div class="detail-row">
-                            <span class="detail-label">Price Target:</span>
-                            <span>${review.price_target || 'N/A'}</span>
+                            <span class="detail-label">Entry Range:</span>
+                            <span>${review.entry_range || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Sell Range:</span>
+                            <span>${review.sell_range || 'N/A'}</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Time Horizon:</span>
@@ -503,16 +479,14 @@ function getSafeScore(value, defaultValue = 0) {
 
 // Calculate final score from all scoring inputs
 function calculateFinalScore(scores) {
-    // scores object should contain: confidence, technical, fundamentals, theme, sector, canslim (array of 7)
-    const canslimAvg = scores.canslim.reduce((sum, val) => sum + parseInt(val), 0) / 7;
+    // scores object should contain: confidence, technical, fundamentals, theme, sector
     const finalScore = (
         parseInt(scores.confidence) +
         parseInt(scores.technical) +
         parseInt(scores.fundamentals) +
-        (parseInt(scores.theme) * 2) +
-        (parseInt(scores.sector) * 2) +
-        canslimAvg
-    ) / 6;
+        parseInt(scores.theme) +
+        parseInt(scores.sector)
+    ) / 5;
     return finalScore.toFixed(2);
 }
 
@@ -524,7 +498,8 @@ async function handleSubmit(e) {
     formData.append('submitterName', document.getElementById('submitterName').value);
     formData.append('companyName', document.getElementById('companyName').value);
     formData.append('reasoning', document.getElementById('reasoning').value);
-    formData.append('priceTarget', document.getElementById('priceTarget').value);
+    formData.append('entryRange', document.getElementById('entryRange').value);
+    formData.append('sellRange', document.getElementById('sellRange').value);
     formData.append('timeHorizon', document.getElementById('timeHorizon').value);
     formData.append('sector', document.getElementById('sector').value);
 
@@ -534,13 +509,6 @@ async function handleSubmit(e) {
     formData.append('fundamentalsScore', document.getElementById('fundamentalsScore').value);
     formData.append('themeScore', document.getElementById('themeScore').value);
     formData.append('sectorScore', document.getElementById('sectorScore').value);
-    formData.append('canslim_c', document.getElementById('canslim_c').value);
-    formData.append('canslim_a', document.getElementById('canslim_a').value);
-    formData.append('canslim_n', document.getElementById('canslim_n').value);
-    formData.append('canslim_s', document.getElementById('canslim_s').value);
-    formData.append('canslim_l', document.getElementById('canslim_l').value);
-    formData.append('canslim_i', document.getElementById('canslim_i').value);
-    formData.append('canslim_m', document.getElementById('canslim_m').value);
 
     // Calculate and append final score
     const finalScore = calculateFinalScore({
@@ -548,16 +516,7 @@ async function handleSubmit(e) {
         technical: document.getElementById('technicalScore').value,
         fundamentals: document.getElementById('fundamentalsScore').value,
         theme: document.getElementById('themeScore').value,
-        sector: document.getElementById('sectorScore').value,
-        canslim: [
-            document.getElementById('canslim_c').value,
-            document.getElementById('canslim_a').value,
-            document.getElementById('canslim_n').value,
-            document.getElementById('canslim_s').value,
-            document.getElementById('canslim_l').value,
-            document.getElementById('canslim_i').value,
-            document.getElementById('canslim_m').value
-        ]
+        sector: document.getElementById('sectorScore').value
     });
     formData.append('finalScore', finalScore);
 
@@ -698,17 +657,22 @@ async function startReview(submissionId) {
                 </div>
 
                 <div class="form-group">
-                    <label for="reviewPriceTarget">Your Price Target (Optional)</label>
-                    <input type="text" id="reviewPriceTarget" placeholder="e.g., $150">
+                    <label for="reviewEntryRange">Entry Range *</label>
+                    <input type="text" id="reviewEntryRange" required placeholder="e.g., $45-50">
+                </div>
+
+                <div class="form-group">
+                    <label for="reviewSellRange">Sell Range *</label>
+                    <input type="text" id="reviewSellRange" required placeholder="e.g., $75-85">
                 </div>
 
                 <div class="form-group">
                     <label for="reviewTimeHorizon">Your Time Horizon *</label>
                     <select id="reviewTimeHorizon" required>
                         <option value="">Select time horizon</option>
-                        <option value="Short">Short Term (< 6 months)</option>
-                        <option value="Medium">Medium Term (6-18 months)</option>
-                        <option value="Long">Long Term (> 18 months)</option>
+                        <option value="Short">Short Term (0-6 months)</option>
+                        <option value="Medium">Medium Term (6-12 months)</option>
+                        <option value="Long">Long Term (12+ months)</option>
                     </select>
                 </div>
 
@@ -768,7 +732,7 @@ async function startReview(submissionId) {
                     </div>
 
                     <div class="form-group">
-                        <label for="reviewTheme">Theme (1-5) * <small style="color: var(--text-muted);">×2 weight</small></label>
+                        <label for="reviewTheme">Theme (1-5) *</label>
                         <select id="reviewTheme" required>
                             <option value="">Select</option>
                             <option value="1">1</option>
@@ -780,7 +744,7 @@ async function startReview(submissionId) {
                     </div>
 
                     <div class="form-group">
-                        <label for="reviewSectorScore">Sector (1-5) * <small style="color: var(--text-muted);">×2 weight</small></label>
+                        <label for="reviewSectorScore">Sector (1-5) *</label>
                         <select id="reviewSectorScore" required>
                             <option value="">Select</option>
                             <option value="1">1</option>
@@ -788,129 +752,6 @@ async function startReview(submissionId) {
                             <option value="3">3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- CANSLIM Scores -->
-                <h4 style="margin: 1.5rem 0 1rem 0; font-size: 1.1rem; font-weight: 600;">CANSLIM Analysis (1-10 each) *</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
-                    <div class="form-group">
-                        <label for="review_canslim_c">C - Current Earnings (1-10) *</label>
-                        <select id="review_canslim_c" required>
-                            <option value="">Select</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="review_canslim_a">A - Annual Earnings (1-10) *</label>
-                        <select id="review_canslim_a" required>
-                            <option value="">Select</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="review_canslim_n">N - New (1-10) *</label>
-                        <select id="review_canslim_n" required>
-                            <option value="">Select</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="review_canslim_s">S - Supply & Demand (1-10) *</label>
-                        <select id="review_canslim_s" required>
-                            <option value="">Select</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="review_canslim_l">L - Leader/Laggard (1-10) *</label>
-                        <select id="review_canslim_l" required>
-                            <option value="">Select</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="review_canslim_i">I - Institutional (1-10) *</label>
-                        <select id="review_canslim_i" required>
-                            <option value="">Select</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="review_canslim_m">M - Market Direction (1-10) *</label>
-                        <select id="review_canslim_m" required>
-                            <option value="">Select</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
                         </select>
                     </div>
                 </div>
@@ -958,7 +799,8 @@ async function submitReview(e, submissionId) {
     formData.append('submissionId', submissionId);
     formData.append('reviewerName', document.getElementById('reviewerName').value);
     formData.append('reasoning', document.getElementById('reviewReasoning').value);
-    formData.append('priceTarget', document.getElementById('reviewPriceTarget').value);
+    formData.append('entryRange', document.getElementById('reviewEntryRange').value);
+    formData.append('sellRange', document.getElementById('reviewSellRange').value);
     formData.append('timeHorizon', document.getElementById('reviewTimeHorizon').value);
 
     // Add all scoring fields
@@ -967,13 +809,6 @@ async function submitReview(e, submissionId) {
     formData.append('fundamentalsScore', document.getElementById('reviewFundamentals').value);
     formData.append('themeScore', document.getElementById('reviewTheme').value);
     formData.append('sectorScore', document.getElementById('reviewSectorScore').value);
-    formData.append('canslim_c', document.getElementById('review_canslim_c').value);
-    formData.append('canslim_a', document.getElementById('review_canslim_a').value);
-    formData.append('canslim_n', document.getElementById('review_canslim_n').value);
-    formData.append('canslim_s', document.getElementById('review_canslim_s').value);
-    formData.append('canslim_l', document.getElementById('review_canslim_l').value);
-    formData.append('canslim_i', document.getElementById('review_canslim_i').value);
-    formData.append('canslim_m', document.getElementById('review_canslim_m').value);
 
     // Calculate and append final score
     const finalScore = calculateFinalScore({
@@ -981,16 +816,7 @@ async function submitReview(e, submissionId) {
         technical: document.getElementById('reviewTechnical').value,
         fundamentals: document.getElementById('reviewFundamentals').value,
         theme: document.getElementById('reviewTheme').value,
-        sector: document.getElementById('reviewSectorScore').value,
-        canslim: [
-            document.getElementById('review_canslim_c').value,
-            document.getElementById('review_canslim_a').value,
-            document.getElementById('review_canslim_n').value,
-            document.getElementById('review_canslim_s').value,
-            document.getElementById('review_canslim_l').value,
-            document.getElementById('review_canslim_i').value,
-            document.getElementById('review_canslim_m').value
-        ]
+        sector: document.getElementById('reviewSectorScore').value
     });
     formData.append('finalScore', finalScore);
 
