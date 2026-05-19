@@ -163,7 +163,8 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             canslim_m,
             finalScore,
             reasoning,
-            priceTarget,
+            entryRange,
+            sellRange,
             timeHorizon,
             sector,
             submitterName
@@ -179,8 +180,8 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
                 ticker, company_name, submitter_id, submitter_name,
                 confidence_level, technical_score, fundamentals_score, theme_score, sector_score,
                 canslim_c, canslim_a, canslim_n, canslim_s, canslim_l, canslim_i, canslim_m,
-                final_score, reasoning, price_target, time_horizon, sector, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'submitted')
+                final_score, reasoning, entry_range, sell_range, time_horizon, sector, status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'submitted')
         `, [
             ticker.toUpperCase(),
             companyName,
@@ -200,7 +201,8 @@ app.post('/api/submissions', upload.array('attachments', 5), async (req, res) =>
             canslim_m,
             finalScore,
             reasoning,
-            priceTarget || null,
+            entryRange || null,
+            sellRange || null,
             timeHorizon,
             sector || null
         ]);
@@ -353,7 +355,8 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             canslim_m,
             finalScore,
             reasoning,
-            priceTarget,
+            entryRange,
+            sellRange,
             timeHorizon
         } = req.body;
 
@@ -407,8 +410,8 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
                 submission_id, reviewer_id, reviewer_name,
                 confidence_level, technical_score, fundamentals_score, theme_score, sector_score,
                 canslim_c, canslim_a, canslim_n, canslim_s, canslim_l, canslim_i, canslim_m,
-                final_score, reasoning, price_target, time_horizon
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                final_score, reasoning, entry_range, sell_range, time_horizon
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             submissionId,
             reviewerId,
@@ -427,7 +430,8 @@ app.post('/api/reviews', upload.array('attachments', 5), async (req, res) => {
             canslim_m,
             finalScore,
             reasoning,
-            priceTarget || null,
+            entryRange || null,
+            sellRange || null,
             timeHorizon
         ]);
 

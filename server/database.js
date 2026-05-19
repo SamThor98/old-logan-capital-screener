@@ -139,7 +139,6 @@ function migrateAddScoringColumns() {
     try {
         const test = query('SELECT technical_score FROM submissions LIMIT 1');
         console.log('✓ Scoring columns already exist, skipping migration');
-        return;
     } catch (error) {
         // Columns don't exist, proceed with migration
         console.log('Adding scoring columns to database...');
@@ -159,7 +158,9 @@ function migrateAddScoringColumns() {
             'canslim_l INTEGER',
             'canslim_i INTEGER',
             'canslim_m INTEGER',
-            'final_score REAL'
+            'final_score REAL',
+            'entry_range TEXT',
+            'sell_range TEXT'
         ];
 
         submissionColumns.forEach(column => {
@@ -187,7 +188,9 @@ function migrateAddScoringColumns() {
             'canslim_l INTEGER',
             'canslim_i INTEGER',
             'canslim_m INTEGER',
-            'final_score REAL'
+            'final_score REAL',
+            'entry_range TEXT',
+            'sell_range TEXT'
         ];
 
         reviewColumns.forEach(column => {
